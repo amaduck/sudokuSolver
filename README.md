@@ -20,9 +20,10 @@ it will make a guess as to next value, and then try to solve again, and repeat u
 1) Using cells in grid as border, would prefer simple lines
 2) Entry sizes are much larger than they need to be, also rectangular, would prefer smaller squares
 3) Validation will stop text / numbers outside of range, but needs to be smooth - .isnumeric() doesn't seem to be catching anything
-4) Make window resizeable - grow cells to fit larger - maybe only resizeable stepwise?
+4) Option to solve, but not display - click on cell to see value. Values hidden by default (except passed), shown when clicked
+5) Make window resizeable - grow cells to fit larger - maybe only resizeable stepwise?
 
 # Changes to make
-Allow it pull csv file for starting numbers
-Sometimes it just gives up when too many guesses needed - resolve
+- Allow it pull csv file for starting numbers
+- Sometimes it just gives up when too many guesses needed - resolve
 
