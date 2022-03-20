@@ -23,7 +23,6 @@ it will make a guess as to next value, and then try to solve again, and repeat u
 4) Make window resizeable - grow cells to fit larger - maybe only resizeable stepwise?
 
 # Changes to make
-Give choice on run to use hardcoded numbers or ask for entry - add this via GUI
 Allow it pull csv file for starting numbers
 Sometimes it just gives up when too many guesses needed - resolve
 
