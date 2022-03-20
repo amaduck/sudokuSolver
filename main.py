@@ -13,6 +13,11 @@ rows, cols = 9, 9
 # single digit grid
 fullgrid = [["-" for x in range(rows)]for y in range(cols)]
 
+# Array of values entered in GUI
+entries = []
+#Differentiate between values passed to program, and values found by program
+passedValues = [[0 for x in range(rows)]for y in range(cols)]
+
 # use an array to show the potential values of each cell
 # array for each cell, with ten digits
 # first digit is a check digit, = total potential values of a cell
@@ -27,6 +32,10 @@ sub_guesses = 0
 # ---------------------------------------------------------------------------------------------
 
 import time
+import tkinter
+import tkinter.messagebox
+from tkinter import *
+
 
 class grid_range():
    # defines a range from start row & col, to end row & col
@@ -478,6 +487,11 @@ def assign_starting_numbers():
    fullgrid[6][6] = 2
    fullgrid[6][7] = 8
 
+   fullgrid[7][3] = 4
+   fullgrid[7][4] = 1
+   fullgrid[7][5] = 9
+   fullgrid[7][8] = 5
+
    fullgrid[8][4] = 8
    fullgrid[8][7] = 7
    fullgrid[8][8] = 9
@@ -505,33 +519,182 @@ def populate_grid():
    update_potential_grid()
 
 
+def solve():
+    update_potential_grid()
+    export_potentials()
+
+    print_full_grid(fullgrid)
+    print_potentials()
+
+    if not solver():
+        print_full_grid(fullgrid)
+        print_potentials()
+        guess()
+
+    print_full_grid(fullgrid)
+    print_potentials()
+
+    show_full_grid(fullgrid, "Solution")
+
+    export_csv()
+    export_potentials()
+
+    if guesses != 0:
+        print("Guesses:", guesses, " SubGuesses:", sub_guesses, " Resets:", resets)
+    else:
+        print("No guesses")
+
+
+def show_full_grid(grid, windowTitle):
+    solution = tkinter.Tk()
+    solution.title(windowTitle)
+    solution.geometry("450x400")
+
+    for i in range(9):
+        if i > 5:
+            rowPos = i + 2
+        elif i > 2:
+            rowPos = i + 1
+        else:
+            rowPos = i
+        for j in range(9):
+            if j > 5:
+                colPos = j + 3
+            elif j > 2:
+                colPos = j + 2
+            else:
+                colPos = j + 1
+            if passedValues[i][j] == 1:
+                bgColour = "green"
+            else:
+                bgColour = "white"
+            lab = Label(solution, width=5, bg=bgColour, text=grid[i][j])
+            lab.grid(row = rowPos, column = colPos)
+            print("i: ",i ,"row: ", rowPos," j: ",j, "Col: ", colPos)
+
+
+    # Drawing borders
+    # Can't get canvas item to stick to grid, so using blank cells
+    for i in range(11):
+        ent2000 = Entry(solution, width=1, bg="black")
+        ent2000.grid(row=i, column = 4)
+        ent2001 = Entry(solution, width=1, bg="black")
+        ent2001.grid(row=i, column=8)
+
+        if i == 3 or i == 7:
+            ent2002 = Entry(solution,  width=1, bg="black")
+            ent2003 = Entry(solution, width=1, bg="black")
+        else:
+            ent2002 = Entry(solution, width=5, bg="black")
+            ent2003 = Entry(solution, width=5, bg="black")
+
+        ent2002.grid(row=3, column=i + 1)
+        ent2003.grid(row=7, column=i + 1)
+
+
+def check_cells():
+    # Checks entries in GUI to ensure anything entered is in the range 0 < x < 10
+    for entry in entries:
+        value = entry.get()
+        if value != "":
+            if not value.isnumeric:
+                tkinter.messagebox.showinfo("Error", "Values must be numeric")
+                return False
+            try:
+                value = int(value)
+                if value < 1 or value >9:
+                    tkinter.messagebox.showinfo("Error","Values must be between 1 and 9")
+                    return False
+            except Exception as ep:
+                tkinter.messagebox.showerror("error", ep)
+    return True
+
+
+def draw_dialog():
+    win = tkinter.Tk(screenName=None, baseName=None, className="Sudoku Solver", useTk=1)
+    win.title("Sudoku Solver")
+    win.geometry("450x400")
+
+    for i in range(9):
+        if i > 5:
+            rowPos = i + 2
+        elif i > 2:
+            rowPos = i + 1
+        else:
+            rowPos = i
+        for j in range(9):
+            if j > 5:
+                colPos = j + 3
+            elif j > 2:
+                colPos = j + 2
+            else:
+                colPos = j + 1
+            ent = Entry(win, width=5)
+            ent.grid(row = rowPos, column = colPos)
+            print("i: ",i ,"row: ", rowPos," j: ",j, "Col: ", colPos)
+            entries.append(ent)
+
+    # Drawing borders
+    # Can't get canvas item to stick to grid, so using blank cells
+    for i in range(11):
+        ent2000 = Entry(win, width=1, bg="black")
+        ent2000.grid(row=i, column = 4)
+        ent2001 = Entry(win, width=1, bg="black")
+        ent2001.grid(row=i, column=8)
+
+        if i == 3 or i == 7:
+            ent2002 = Entry(win,  width=1, bg="black")
+            ent2003 = Entry(win, width=1, bg="black")
+        else:
+            ent2002 = Entry(win, width=5, bg="black")
+            ent2003 = Entry(win, width=5, bg="black")
+
+        ent2002.grid(row=3, column=i + 1)
+        ent2003.grid(row=7, column=i + 1)
+
+
+    def get_numbers():
+        if check_cells():
+            entry = 1
+            x = 0
+            y = 0
+            xCounter = 0
+            for ent in entries:
+                value = ent.get()
+                if value == "":
+                    value = "-"
+                else:
+                    value = int(value)
+                    passedValues[x][y] = 1
+
+                fullgrid[x][y] = value
+
+                xCounter += 1
+                if xCounter >8:
+                    x += 1
+                    xCounter = 0
+                if y > 7:
+                    y = 0
+                else:
+                    y += 1
+                entry += 1
+
+            solve()
+
+    btn = Button(win, text="Solve", width=10, height=5, command=get_numbers)
+    btn.place(x=170,y=275)
+
+    win.mainloop()
+
+
 def main():
-   populate_grid() # Uncomment this to enter values by prompt
+   # populate_grid() # Uncomment this to enter values by prompt
    ticks_at_start = time.time()
-   # assign_starting_numbers() # Uncomment this to enter values hardcoded
-   update_potential_grid()
-   export_potentials()
-
-   print_full_grid(fullgrid)
-   print_potentials()
-
-   if not solver():
-       print_full_grid(fullgrid)
-       print_potentials()
-       guess()
-
-   print_full_grid(fullgrid)
-   print_potentials()
-
-   export_csv()
-   export_potentials()
-
-   if guesses != 0:
-       print("Guesses:", guesses, " SubGuesses:", sub_guesses, " Resets:", resets)
+   assign_starting_numbers()  # Uncomment this to enter values hardcoded
+   draw_dialog()
 
    ticks_at_end = time.time()
    duration = ticks_at_end - ticks_at_start
    print("Solving took", duration, "seconds")
-
 
 main()
