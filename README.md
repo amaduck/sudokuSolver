@@ -33,10 +33,10 @@ it will make a guess as to next value, and then try to solve again, and repeat u
 1) Sometimes it just gives up when too many guesses needed. It will behave as if solved - displaying fullgrid etc - resolve
 2) Entry for this stored as import.csv.issue - will solve based on these numbers. Adding extra numbers, per import.csv.issueUnsolvable causes it to give up after finding 1 number. Numbers added agree with final solution of .issue, unclear why giving more information causes it to stop. This happens whether numbers added via CSV or GUI
 3) Need to examine the way guesses are made. Ideally:
-  - Starting numbers assigned
-  - Solved as much as possible without guesses
-  - This grid stored as reset point
-  - Cell with least potential values identified - guess made, guess recorded, attempted solve
-  - If solve not possible on last step, reset, make a different guess for that cell, etc
+    - Starting numbers assigned
+    - Solved as much as possible without guesses
+    - This grid stored as reset point
+    - Cell with least potential values identified - guess made, guess recorded, attempted solve
+    - If solve not possible on last step, reset, make a different guess for that cell, etc
 
 
