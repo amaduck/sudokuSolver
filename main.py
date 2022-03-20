@@ -168,7 +168,6 @@ def find_single_possibilities():
 def check_cell_only_home():
    changes = False
    for digits in range(1, 10):
-
        # rows
        for rows in range(9):
            total = 0
@@ -496,6 +495,12 @@ def assign_starting_numbers():
    fullgrid[8][7] = 7
    fullgrid[8][8] = 9
 
+   # The following for loops will mark all coded values as having been passed to program
+   for x in range(rows):
+       for y in range(cols):
+           if fullgrid[x][y] != "-":
+               passedValues[x][y] = 1
+
 
 def populate_grid():
    print("Please enter the starting values")
@@ -516,6 +521,13 @@ def populate_grid():
                if not valid:
                    print("Please enter either a digit from 1 - 9, or a dash '-'")
            fullgrid[rows][cols] = value
+
+   # Mark entered values as having been passed to program
+   for x in range(rows):
+       for y in range(cols):
+           if fullgrid[x][y] != "-":
+               passedValues[x][y] = 1
+
    update_potential_grid()
 
 
@@ -550,28 +562,26 @@ def show_full_grid(grid, windowTitle):
     solution.title(windowTitle)
     solution.geometry("450x400")
 
-    for i in range(9):
-        if i > 5:
-            rowPos = i + 2
-        elif i > 2:
-            rowPos = i + 1
+    for x in range(rows):
+        if x > 5:
+            rowPos = x + 2
+        elif x > 2:
+            rowPos = x + 1
         else:
-            rowPos = i
-        for j in range(9):
-            if j > 5:
-                colPos = j + 3
-            elif j > 2:
-                colPos = j + 2
+            rowPos = x
+        for y in range(cols):
+            if y > 5:
+                colPos = y + 3
+            elif y > 2:
+                colPos = y + 2
             else:
-                colPos = j + 1
-            if passedValues[i][j] == 1:
+                colPos = y + 1
+            if passedValues[x][y] == 1:
                 bgColour = "green"
             else:
                 bgColour = "white"
-            lab = Label(solution, width=5, bg=bgColour, text=grid[i][j])
-            lab.grid(row = rowPos, column = colPos)
-            print("i: ",i ,"row: ", rowPos," j: ",j, "Col: ", colPos)
-
+            lab = Label(solution, width=5, bg=bgColour, text=grid[x][y]).grid(row = rowPos, column = colPos)
+            # print("x: ",x ,"row: ", rowPos," y: ",y, "Col: ", colPos)
 
     # Drawing borders
     # Can't get canvas item to stick to grid, so using blank cells
@@ -610,48 +620,49 @@ def check_cells():
     return True
 
 
-def draw_dialog():
-    win = tkinter.Tk(screenName=None, baseName=None, className="Sudoku Solver", useTk=1)
-    win.title("Sudoku Solver")
-    win.geometry("450x400")
+def number_entry():
+    numberEntry = tkinter.Tk(screenName=None, baseName=None, className="Sudoku Solver", useTk=1)
+    numberEntry.title("Sudoku Solver - Enter known numbers")
+    numberEntry.geometry("450x400")
 
-    for i in range(9):
-        if i > 5:
-            rowPos = i + 2
-        elif i > 2:
-            rowPos = i + 1
+    for x in range(rows):
+        if x > 5:
+            rowPos = x + 2
+        elif x > 2:
+            rowPos = x + 1
         else:
-            rowPos = i
-        for j in range(9):
-            if j > 5:
-                colPos = j + 3
-            elif j > 2:
-                colPos = j + 2
+            rowPos = x
+        for y in range(cols):
+            if y > 5:
+                colPos = y + 3
+            elif y > 2:
+                colPos = y + 2
             else:
-                colPos = j + 1
-            ent = Entry(win, width=5)
+                colPos = y + 1
+            ent = Entry(numberEntry, width=5, justify=tkinter.CENTER)
             ent.grid(row = rowPos, column = colPos)
-            print("i: ",i ,"row: ", rowPos," j: ",j, "Col: ", colPos)
+            # combining previous 2 lines into single line (ie ent=Entry().grid()) causes error - not added to entries array
             entries.append(ent)
+            # print("x: ",x ,"row: ", rowPos," y: ",y, "Col: ", colPos)
+
 
     # Drawing borders
     # Can't get canvas item to stick to grid, so using blank cells
     for i in range(11):
-        ent2000 = Entry(win, width=1, bg="black")
+        ent2000 = Entry(numberEntry, width=1, bg="black")
         ent2000.grid(row=i, column = 4)
-        ent2001 = Entry(win, width=1, bg="black")
+        ent2001 = Entry(numberEntry, width=1, bg="black")
         ent2001.grid(row=i, column=8)
 
         if i == 3 or i == 7:
-            ent2002 = Entry(win,  width=1, bg="black")
-            ent2003 = Entry(win, width=1, bg="black")
+            ent2002 = Entry(numberEntry,  width=1, bg="black")
+            ent2003 = Entry(numberEntry, width=1, bg="black")
         else:
-            ent2002 = Entry(win, width=5, bg="black")
-            ent2003 = Entry(win, width=5, bg="black")
+            ent2002 = Entry(numberEntry, width=5, bg="black")
+            ent2003 = Entry(numberEntry, width=5, bg="black")
 
         ent2002.grid(row=3, column=i + 1)
         ent2003.grid(row=7, column=i + 1)
-
 
     def get_numbers():
         if check_cells():
@@ -678,20 +689,52 @@ def draw_dialog():
                 else:
                     y += 1
                 entry += 1
-
+            numberEntry.destroy()
             solve()
 
-    btn = Button(win, text="Solve", width=10, height=5, command=get_numbers)
+    btn = Button(numberEntry, text="Solve", width=10, height=5, command=get_numbers)
     btn.place(x=170,y=275)
 
-    win.mainloop()
+    numberEntry.mainloop()
+
+
+def welcome_screen():
+    welcomeScreen = tkinter.Tk(screenName=None, baseName=None, className="Sudoku Solver", useTk=1)
+    welcomeScreen.title("Sudoku Solver")
+    welcomeScreen.geometry("450x200")
+
+    choice = IntVar()
+    Radiobutton(welcomeScreen, text='Enter into GUI', variable=choice, value=1).pack(anchor=W)
+    Radiobutton(welcomeScreen, text='Import csv', variable=choice, value=2).pack(anchor=W)
+    Radiobutton(welcomeScreen, text='Enter at text prompt', variable=choice, value=3).pack(anchor=W)
+    Radiobutton(welcomeScreen, text='Use hardcoded values', variable=choice, value=4).pack(anchor=W)
+
+    def get_choice():
+        if choice.get() ==1:
+            welcomeScreen.destroy()
+            number_entry()
+        elif choice.get() ==2:
+            tkinter.messagebox.showinfo("2", "You picked option 2")
+        elif choice.get() == 3:
+            welcomeScreen.destroy()
+            populate_grid()
+            solve()
+        elif choice.get() == 4:
+            welcomeScreen.destroy()
+            assign_starting_numbers()
+            solve()
+        else:
+            tkinter.messagebox.showinfo("Nothing selected", "Please choose an option")
+
+    btn = Button(welcomeScreen, text="Choose", width=5, height=1, command=get_choice)
+    btn.place(x=170, y=100)
+
+    welcomeScreen.mainloop()
 
 
 def main():
-   # populate_grid() # Uncomment this to enter values by prompt
    ticks_at_start = time.time()
-   assign_starting_numbers()  # Uncomment this to enter values hardcoded
-   draw_dialog()
+   welcome_screen()
 
    ticks_at_end = time.time()
    duration = ticks_at_end - ticks_at_start
