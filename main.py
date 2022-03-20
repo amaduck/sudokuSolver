@@ -31,6 +31,7 @@ resets = 0
 sub_guesses = 0
 # ---------------------------------------------------------------------------------------------
 
+# Imports
 import time
 import tkinter
 import tkinter.messagebox
@@ -428,6 +429,43 @@ def export_potentials():
        full_file.close()
 
 
+def check_csv():
+    with open("import.csv") as testFile:
+        lines = 0
+        error_message=""
+        for line in testFile:
+            lines += 1
+            if lines > 9:
+                error_message = error_message + "Too many lines - max is 9.\n"
+            line = line.strip()
+            line = line.split(",")
+            if len(line) > 9:
+                error_message = error_message + "Line " + str(lines) + " is too long\n"
+            for values in line:
+                if values != "-":
+                    if not values.isnumeric():
+                        error_message = error_message + "Line " + str(lines) + " contains non numeric values\n"
+                    elif int(values) < 1 or int(values) > 9:
+                        error_message = error_message + "Line " + str(lines) + " contains a number out of range\n"
+        return (error_message)
+
+
+def import_csv():
+    with open("import.csv") as testFile:
+        x = 0
+        for line in testFile:
+            line = line.strip()
+            line = line.split(",")
+            for y in range(cols):
+                value = line[y]
+                print("Value: ", value, " x:",x, " y:",y)
+                if value != "-":
+                    fullgrid[x][y] = int(value)
+                    passedValues[x][y] = 1
+            x += 1
+    update_potential_grid()
+
+
 def print_potentials():
    for x in range(9):
        for y in range(9):
@@ -495,11 +533,15 @@ def assign_starting_numbers():
    fullgrid[8][7] = 7
    fullgrid[8][8] = 9
 
-   # The following for loops will mark all coded values as having been passed to program
-   for x in range(rows):
-       for y in range(cols):
-           if fullgrid[x][y] != "-":
-               passedValues[x][y] = 1
+   mark_passed()
+
+
+def mark_passed():
+    # The following for loops will mark all coded values as having been passed to program
+    for x in range(rows):
+        for y in range(cols):
+            if fullgrid[x][y] != "-":
+                passedValues[x][y] = 1
 
 
 def populate_grid():
@@ -522,11 +564,7 @@ def populate_grid():
                    print("Please enter either a digit from 1 - 9, or a dash '-'")
            fullgrid[rows][cols] = value
 
-   # Mark entered values as having been passed to program
-   for x in range(rows):
-       for y in range(cols):
-           if fullgrid[x][y] != "-":
-               passedValues[x][y] = 1
+   mark_passed()
 
    update_potential_grid()
 
@@ -714,7 +752,15 @@ def welcome_screen():
             welcomeScreen.destroy()
             number_entry()
         elif choice.get() ==2:
-            tkinter.messagebox.showinfo("2", "You picked option 2")
+            csv_info = "This imports the 'import.csv' file, and assigns the numbers found.\nFile can only contain numbers and dashes. Check 'CSV_template.csv' to see file format."
+            if tkinter.messagebox.askokcancel("CSV", csv_info):
+                message = check_csv()
+                if message == "":
+                    welcomeScreen.destroy()
+                    import_csv()
+                    solve()
+                else:
+                    tkinter.messagebox.showinfo("CSV", message)
         elif choice.get() == 3:
             welcomeScreen.destroy()
             populate_grid()
