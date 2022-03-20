@@ -16,9 +16,13 @@ Some puzzles can be solved entirely in this manner, but some will require a choi
 If after entering all values where cells have only single potential number puzzle is still not solved, 
 it will make a guess as to next value, and then try to solve again, and repeat until solved
 
+20220320 GUI added - needs more work
+1) Using cells in grid as border, would prefer simple lines
+2) Entry sizes are much larger than they need to be, also rectangular, would prefer smaller squares
+3) Validation will stop text / numbers outside of range, but needs to be smooth - .isnumeric() doesn't seem to be catching anything
 
 # Changes to make
-Give choice on run to use hardcoded numbers or ask for entry
+Give choice on run to use hardcoded numbers or ask for entry - add this via GUI
 Allow it pull csv file for starting numbers
 Sometimes it just gives up when too many guesses needed - resolve
-Add GUI for number entry
+
