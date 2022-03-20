@@ -24,6 +24,6 @@ it will make a guess as to next value, and then try to solve again, and repeat u
 5) Make window resizeable - grow cells to fit larger - maybe only resizeable stepwise?
 
 # Changes to make
-- Allow it pull csv file for starting numbers
 - Sometimes it just gives up when too many guesses needed - resolve
+- Entry for this stored as import.csv.issue - will solve based on these numbers. Adding extra numbers, per import.csv.issueUnsolvable causes it to give up after finding 1 number. Numbers added agree with final solution of .issue, unclear why giving more information causes it to stop. This happens whether numbers added via CSV or GUI
 
