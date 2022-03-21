@@ -38,5 +38,7 @@ it will make a guess as to next value, and then try to solve again, and repeat u
     - This grid stored as reset point
     - Cell with least potential values identified - guess made, guess recorded, attempted solve
     - If solve not possible on last step, reset, make a different guess for that cell, etc
+4) Rather than using messagbox.showinfo for CSV file issues, create new version of pop up, better sized
+  
 
 
